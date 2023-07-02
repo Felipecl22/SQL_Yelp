@@ -1,0 +1,500 @@
+Data Scientist Role Play: Profiling and Analyzing the Yelp Dataset Coursera Worksheet
+
+This is a 2-part assignment. In the first part, you are asked a series of questions that will help you profile and understand the data just like a data scientist would. For this first part of the assignment, you will be assessed both on the correctness of your findings, as well as the code you used to arrive at your answer. You will be graded on how easy your code is to read, so remember to use proper formatting and comments where necessary.
+
+In the second part of the assignment, you are asked to come up with your own inferences and analysis of the data for a particular research question you want to answer. You will be required to prepare the dataset for the analysis you choose to do. As with the first part, you will be graded, in part, on how easy your code is to read, so use proper formatting and comments to illustrate and communicate your intent as required.
+
+For both parts of this assignment, use this "worksheet." It provides all the questions you are being asked, and your job will be to transfer your answers and SQL coding where indicated into this worksheet so that your peers can review your work. You should be able to use any Text Editor (Windows Notepad, Apple TextEdit, Notepad ++, Sublime Text, etc.) to copy and paste your answers. If you are going to use Word or some other page layout application, just be careful to make sure your answers and code are lined appropriately.
+In this case, you may want to save as a PDF to ensure your formatting remains intact for you reviewer.
+
+
+
+Part 1: Yelp Dataset Profiling and Understanding
+1. Profile the data by finding the total number of records for each of the tables below:
+	
+i. Attribute table = 10000
+
+ii. Business table = 10000
+
+iii. Category table = 10000
+
+iv. Checkin table = 10000
+
+v. elite_years table = 10000
+
+vi. friend table = 10000
+
+vii. hours table = 10000
+
+viii. photo table = 10000 
+
+ix. review table = 10000
+
+x. tip table = 10000
+
+xi. user table = 10000
+
+Code:	
+
+SELECT COUNT(*)
+FROM "yourtablehere";
+
+2. Find the total distinct records by either the foreign key or primary key for each table. If two foreign keys are listed in the table, please specify which foreign key.
+
+i. Business = id: 10000 - Primary Key
+
+ii. Hours = business_id: 1562 - Foreing Key
+
+iii. Category = business_id: 2643 - Foreing Key
+
+iv. Attribute = business_id: 1115 - Foreing Key
+
+v. Review = id: 10000 - Primary Key; business_id: 8090- Foreing Key; user_id:9581- Foreing Key
+
+vi. Checkin = business_id: 493 - Foreing Key
+
+vii. Photo = id: 10000 - Primary Key; business_id: 6493 - Foreing Key
+
+viii. Tip = user_id: 537 - Foreing Key; business_id: 3979 - Foreing Key
+
+ix. User = id: 10000 - Primary Key
+
+x. Friend = user_id:  11 - Foreing Key
+
+xi. Elite_years = user_id: 2780 - Foreing Key
+
+Code:
+
+SELECT COUNT(DISTINCT "yourcolumnhere")
+FROM "yourtablehere";
+
+Note: Primary Keys are denoted in the ER-Diagram with a yellow key icon.	
+
+3. Are there any columns with null values in the Users table? Indicate "yes," or "no."
+
+	Answer: NO.
+	
+	
+	SQL code used to arrive at answer:
+	
+SELECT count( * ) 
+FROM User
+WHERE id IS NULL OR 
+       name IS NULL OR 
+       review_count IS NULL OR 
+       yelping_since IS NULL OR 
+       useful IS NULL OR 
+       funny IS NULL OR 
+       cool IS NULL OR 
+       fans IS NULL OR 
+       average_stars IS NULL OR 
+       compliment_hot IS NULL OR 
+       compliment_more IS NULL OR 
+       compliment_profile IS NULL OR 
+       compliment_cute IS NULL OR 
+       compliment_list IS NULL OR 
+       compliment_note IS NULL OR 
+       compliment_plain IS NULL OR 
+       compliment_cool IS NULL OR 
+       compliment_funny IS NULL OR 
+       compliment_writer IS NULL OR 
+       compliment_photos IS NULL;
+	
+4. For each table and column listed below, display the smallest (minimum), largest (maximum), and average (mean) value for the following fields:
+
+	i. Table: Review, Column: Stars
+	
+	+-----------+-----------+-----------+
+	| min_value | max_value | avg_value |
+	+-----------+-----------+-----------+
+	|         1 |         5 |    3.7082 |
+	+-----------+-----------+-----------+
+	
+	Code:
+
+	SELECT min(Stars) as min_value, 
+	       max(Stars) as max_value, 
+	       avg(Stars) as avg_value
+	FROM Review;	
+	
+	ii. Table: Business, Column: Stars
+	
+	+-----------+-----------+-----------+
+	| min_value | max_value | avg_value |
+	+-----------+-----------+-----------+
+	|       1.0 |       5.0 |    3.6549 |
+	+-----------+-----------+-----------+	
+			
+	Code:
+
+	SELECT min(Stars) as min_value, 
+	       max(Stars) as max_value, 
+	       avg(Stars) as avg_value
+	FROM Business;
+
+	iii. Table: Tip, Column: Likes
+	
+	+-----------+-----------+-----------+
+	| min_value | max_value | avg_value |
+	+-----------+-----------+-----------+
+	|         0 |         2 |    0.0144 |
+	+-----------+-----------+-----------+
+			
+	Code:
+
+	SELECT min(Likes) as min_value, 
+	       max(Likes) as max_value,
+	       avg(Likes) as avg_value
+	FROM Tip;	
+	
+	iv. Table: Checkin, Column: Count
+	
+	+-----------+-----------+-----------+
+	| min_value | max_value | avg_value |
+	+-----------+-----------+-----------+
+	|         1 |        53 |    1.9414 |
+	+-----------+-----------+-----------+
+	
+	Code:
+
+	SELECT min(Count) as min_value, 
+               max(Count) as max_value, 
+	       avg(Count) as avg_value
+	FROM Checkin;
+	
+	v. Table: User, Column: Review_count
+	
+	+-----------+-----------+-----------+
+	| min_value | max_value | avg_value |
+	+-----------+-----------+-----------+
+	|         0 |      2000 |   24.2995 |
+	+-----------+-----------+-----------+
+		
+	Code:
+
+	SELECT min(Review_count) as min_value, 
+	       max(Review_count) as max_value, 
+	       avg(Review_count) as avg_value
+	FROM User;
+
+5. List the cities with the most reviews in descending order:
+
+	SQL code used to arrive at answer:
+	
+	SELECT city, 
+	       sum(Review_count) as Total_reviews
+	FROM business
+	GROUP BY city
+	ORDER BY sum(Review_count) desc;
+
+	Copy and Paste the Result Below:
+
+	+-----------------+---------------+
+	| city            | Total_reviews |
+	+-----------------+---------------+
+	| Las Vegas       |         82854 |
+	| Phoenix         |         34503 |
+	| Toronto         |         24113 |
+	| Scottsdale      |         20614 |
+	| Charlotte       |         12523 |
+	| Henderson       |         10871 |
+	| Tempe           |         10504 |
+	| Pittsburgh      |          9798 |
+	| MontrÃ©al        |          9448 |
+	| Chandler        |          8112 |
+	| Mesa            |          6875 |
+	| Gilbert         |          6380 |
+	| Cleveland       |          5593 |
+	| Madison         |          5265 |
+	| Glendale        |          4406 |
+	| Mississauga     |          3814 |
+	| Edinburgh       |          2792 |
+	| Peoria          |          2624 |
+	| North Las Vegas |          2438 |
+	| Markham         |          2352 |
+	| Champaign       |          2029 |
+	| Stuttgart       |          1849 |
+	| Surprise        |          1520 |
+	| Lakewood        |          1465 |
+	| Goodyear        |          1155 |
+	+-----------------+---------------+
+	(Output limit exceeded, 25 of 362 total rows shown)
+
+	#Note	
+	#i didn't use just review_count or count(review_count) because as you can see below 			#diferents business have their own review count and if you count those reviews like an 			#unique review for each business for a specific city you will be counting 1389 reviews as 		#just 1 review, for that reason i #used sum(review_count).
+
+	#Sample reviews filtered by "Las Vegas" city  
+	+-----------+--------------+--------------------------------------------+
+	| city      | review_count | name                                       |
+	+-----------+--------------+--------------------------------------------+
+	| Las Vegas |         1389 | Delmonico Steakhouse                       |
+	| Las Vegas |            5 | World Food Championships                   |
+	| Las Vegas |           16 | Lucky's Pet Grooming & Boutique            |
+	| Las Vegas |            6 | Nightlife Tours                            |
+	| Las Vegas |            7 | Double Play Sports Bar                     |
+	...
+	(Output limit exceeded, 25 of 1561 total rows shown)
+	
+6. Find the distribution of star ratings to the business in the following cities:
+
+	i. Avon
+
+	SQL code used to arrive at answer:
+
+	SELECT stars as "Star Rating", 
+               count(stars) as "Star Count"
+	FROM business
+	WHERE city = "Avon"
+	GROUP BY stars
+	ORDER BY "Star Rating" DESC;
+
+	Copy and Paste the Resulting Table Below (2 columns Ã¢â‚¬â€œ star rating and count):
+
+	+-------------+------------+
+	| Star Rating | Star Count |
+	+-------------+------------+
+	|         5.0 |          1 |
+	|         4.5 |          1 |
+	|         4.0 |          2 |
+	|         3.5 |          3 |
+	|         2.5 |          2 |
+	|         1.5 |          1 |
+	+-------------+------------+
+
+ii. Beachwood
+
+	SQL code used to arrive at answer:
+
+	SELECT stars as "Star Rating", 
+               count(stars) as "Star Count"
+	FROM business
+	WHERE city = "Beachwood"
+	GROUP BY stars
+	ORDER BY "Star Rating" DESC;
+
+	Copy and Paste the Resulting Table Below (2 columns â€œstar rating and count):
+	
+	+-------------+------------+
+	| Star Rating | Star Count |
+	+-------------+------------+
+	|         5.0 |          5 |
+	|         4.5 |          2 |
+	|         4.0 |          1 |
+	|         3.5 |          2 |
+	|         3.0 |          2 |
+	|         2.5 |          1 |
+	|         2.0 |          1 |
+	+-------------+------------+	
+
+7. Find the top 3 users based on their total number of reviews:
+		
+	SQL code used to arrive at answer:
+	
+	+--------+--------------+
+	| name   | review_count |
+	+--------+--------------+
+	| Gerald |         2000 |
+	| Sara   |         1629 |
+	| Yuri   |         1339 |
+	+--------+--------------+
+		
+	Copy and Paste the Result Below:
+	SELECT name, 
+	       review_count
+	FROM user
+	ORDER by review_count DESC
+	LIMIT 3;
+
+8. Does posing more reviews correlate with more fans?
+
+	Please explain your findings and interpretation of the results:
+	
+	First of all, it should be made clear that when performing a correlation analysis we are 	verifying whether the variables are correlated with each other, but we are not saying that 		exist causality (variable influences another).
+
+	Now, we can clearly see that having more reviews doesn't mean having more fans, it 			could be said that the correlation is weak or even 0, going deeper, we could even say that 		the lower the review_count value the greater the number of fans, but some review_count 			points have very high values that disproportionate the model.
+
+	Finally, one last hypothesis can be made in which a third variable can cause the number of 		fans to increase.
+
+	Code:
+
+	SELECT name, 
+	       review_count,
+	       fans
+	FROM user
+	ORDER BY fans DESC;
+
+	+-----------+--------------+------+
+	| name      | review_count | fans |
+	+-----------+--------------+------+
+	| Amy       |          609 |  503 |
+	| Mimi      |          968 |  497 |
+	| Harald    |         1153 |  311 |
+	| Gerald    |         2000 |  253 |
+	| Christine |          930 |  173 |
+	| Lisa      |          813 |  159 |
+	| Cat       |          377 |  133 |
+	| William   |         1215 |  126 |
+	| Fran      |          862 |  124 |
+	| Lissa     |          834 |  120 |
+	| Mark      |          861 |  115 |
+	| Tiffany   |          408 |  111 |
+	| bernice   |          255 |  105 |
+	| Roanna    |         1039 |  104 |
+	| Angela    |          694 |  101 |
+	| .Hon      |         1246 |  101 |
+	| Ben       |          307 |   96 |
+	| Linda     |          584 |   89 |
+	| Christina |          842 |   85 |
+	| Jessica   |          220 |   84 |
+	| Greg      |          408 |   81 |
+	| Nieves    |          178 |   80 |
+	| Sui       |          754 |   78 |
+	| Yuri      |         1339 |   76 |
+	| Nicole    |          161 |   73 |
+	+-----------+--------------+------+
+	(Output limit exceeded, 25 of 10000 total rows shown)
+	
+9. Are there more reviews with the word "love" or with the word "hate" in them?
+
+	Answer: Yes, there are more reviews with word love.
+	
+	SQL code used to arrive at answer:
+
+	SELECT 
+		(select count(text)
+		FROM review 
+		WHERE text LIKE '%love%') as 'count_love_text',
+		(select count(text)
+		FROM review 
+		WHERE text LIKE '%hate%') as 'count_hate_text';
+	
+	+-----------------+-----------------+
+	| count_love_text | count_hate_text |
+	+-----------------+-----------------+
+	|            1780 |             232 |
+	+-----------------+-----------------+
+	
+10. Find the top 10 users with the most fans:
+
+	SQL code used to arrive at answer:
+	
+	SELECT name, 
+	       fans
+	FROM user
+	ORDER BY fans DESC
+	LIMIT 10;
+	
+	Copy and Paste the Result Below:
+
+	+-----------+------+
+	| name      | fans |
+	+-----------+------+
+	| Amy       |  503 |
+	| Mimi      |  497 |
+	| Harald    |  311 |
+	| Gerald    |  253 |
+	| Christine |  173 |
+	| Lisa      |  159 |
+	| Cat       |  133 |
+	| William   |  126 |
+	| Fran      |  124 |
+	| Lissa     |  120 |
+	+-----------+------+
+		
+
+Part 2: Inferences and Analysis
+
+1. Pick one city and category of your choice and group the businesses in that city or category by their overall star rating. Compare the businesses with 2-3 stars to the businesses with 4-5 stars and answer the following questions. Include your code.
+
+City:Toronto / Category:Food 
+
+i. Do the two groups you chose to analyze have a different distribution of hours?
+	Yes, they have, for example on Tuesday 4-5 stars Halo Brewery open 15:00-21:00 and 2-3 				stars Loblaws open 8:00-22:00.
+
+ii. Do the two groups you chose to analyze have a different number of reviews?
+         	
+	Yes, they have different number of reviews.
+         
+iii. Are you able to infer anything from the location data provided between these two groups? Explain.
+
+	Yes, from the location of Loblaws 2-3 stars in comparison con Cabin 4-5 stars, we can see that 4-5 		star restaurants are ubicated in a centric or more concurrent or a street with clustering restaurants 		than a 2-3 star restaurant, and thats why they have more stars and reviews, because more people are 	in that location.
+
+SQL code used for analysis:
+	
+	Code:
+
+	SELECT b.city,h.hours, b.review_count,b.name, b.address,
+	CASE
+   	 	WHEN (stars >= 2 AND stars <=3) THEN '2-3 stars'
+   		WHEN stars >= 4 THEN '4-5 stars'
+    		END AS 'Stars Rating'
+	FROM business b
+	INNER JOIN hours h ON  b.id = h.business_id
+	INNER JOIN category c ON b.id = c.business_id
+	WHERE 
+    		b.city = 'Toronto' AND 
+   		c.category = 'Food' AND
+    	        (b.stars >= 4 or (b.stars >= 2 and stars <=3))
+	ORDER BY 'Stars Rating';
+		
+		
+2. Group business based on the ones that are open and the ones that are closed. What differences can you find between the ones that are still open and the ones that are closed? List at least two differences and the SQL code you used to arrive at your answer.
+		
+i. Difference 1: Open has more companies than closed.      
+         
+ii. Difference 2: Open has better rating of star than closed.
+                
+SQL code used for analysis:
+
+	SELECT 
+	CASE
+		WHEN is_open = 0 THEN 'is closed'
+		WHEN is_open = 1 THEN 'is open'
+		END as 'Business_status',
+	COUNT(city) as By_city,
+	AVG(stars) as BY_stars
+	FROM business
+	GROUP BY Business_status;
+
++-----------------+---------+---------------+
+| Business_status | By_city |      BY_stars |
++-----------------+---------+---------------+
+| is closed       |    1520 | 3.52039473684 |
+| is open         |    8480 | 3.67900943396 |
++-----------------+---------+---------------+
+	
+	
+3. For this last part of your analysis, you are going to choose the type of analysis you want to conduct on the Yelp dataset and are going to prepare the data for analysis.
+
+Ideas for analysis include: Parsing out keywords and business attributes for sentiment analysis, clustering businesses to find commonalities or anomalies between them, predicting the overall star rating for a business, predicting the number of fans a user will have, and so on. These are just a few examples to get you started, so feel free to be creative and come up with your own problem you want to solve. Provide answers, in-line, to all of the following:
+	
+i. Indicate the type of analysis you chose to do:
+	Ans: I want to know if the stars rating and total review_count are correlated each other, 	     	        more reviews mean better ratings? hypothesis.
+                  
+ii. Write 1-2 brief paragraphs on the type of data you will need for your analysis and why you chose that data:
+        Ans: I need stars and review_count as variables (int data).
+	     I chose this variables for hypothesis testing purpose.                   
+                  
+iii. Output of your finished dataset:
+      	+-------+--------------+
+	| stars | Total Review |
+	+-------+--------------+
+	|   1.0 |          961 |
+	|   1.5 |         2662 |
+	|   2.0 |         7820 |
+	|   2.5 |        16808 |
+	|   3.0 |        36295 |
+	|   3.5 |        71325 |
+	|   4.0 |        97044 |
+	|   4.5 |        53938 |
+	|   5.0 |        17708 |
+	+-------+--------------+
+         
+iv. Provide the SQL code you used to create your final dataset:
+
+  	SELECT stars,
+       	       sum(review_count) AS 'Total Review'
+	FROM business
+	GROUP BY stars;      
+
+ 	Ans: It looks like better stars rating help to increase the total reviews, but as the rating of 		stars start to increase it starts to drop heavily, need more testing. 	    	    
